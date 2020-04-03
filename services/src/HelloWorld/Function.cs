@@ -34,7 +34,7 @@ namespace HelloWorld
             var location = await GetCallingIP();
             var body = new Dictionary<string, string>
             {
-                { "message", "hello world" },
+                { "message", "hello world dude" },
                 { "location", location }
             };
 
