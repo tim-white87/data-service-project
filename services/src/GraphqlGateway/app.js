@@ -1,19 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server-lambda');
+const schema = require('./src/schema');
 
-// Construct a schema, using GraphQL schema language
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`;
-
-// Provide resolver functions for your schema fields
-const resolvers = {
-  Query: {
-    hello: () => 'Hello world!'
-  }
-};
-
-const server = new ApolloServer({ typeDefs, resolvers, playground: true });
+const server = new ApolloServer({ schema, playground: true });
 
 exports.graphqlHandler = server.createHandler();
