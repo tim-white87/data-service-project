@@ -9,38 +9,36 @@ Globals:
     Timeout: 10
 
 Resources:
-  GraphqlGatewayFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: ./src/GraphqlGateway/
-      Handler: app.graphqlHandler
-      Runtime: nodejs12.x
-      Events:
-        GraphqlQuery:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /graphql
-            Method: post
-        GraphqlPlayground:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /graphql
-            Method: get
-  # HelloWorldFunction:
+  # GraphqlGatewayFunction:
   #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
   #   Properties:
-  #     CodeUri: ./src/HelloWorld/
-  #     Handler: HelloWorld::HelloWorld.Function::FunctionHandler
-  #     Runtime: dotnetcore3.1
-  #     Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
-  #       Variables:
-  #         PARAM1: VALUE
+  #     CodeUri: ./src/GraphqlGateway/
+  #     Handler: app.graphqlHandler
+  #     Runtime: nodejs12.x
   #     Events:
-  #       HelloWorld:
+  #       GraphqlQuery:
   #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
   #         Properties:
-  #           Path: /hello
+  #           Path: /graphql
+  #           Method: post
+  #       GraphqlPlayground:
+  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+  #         Properties:
+  #           Path: /graphql
   #           Method: get
+
+  MessagesFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./src/Messages/
+      Handler: Messages::Messages.LambdaEntryPoint::FunctionHandlerAsync
+      Runtime: dotnetcore3.1
+      Events:
+        Message:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /messages/{proxy+}
+            Method: any
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
