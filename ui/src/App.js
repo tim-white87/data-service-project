@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 import Page from './common/Page';
+import AboutMe from './modules/about/AboutMe';
 import Messages from './modules/messages/Messages';
 
 // TODO: set these to env vars
@@ -52,9 +53,9 @@ export default class App extends Component {
     return (
       <Router>
         <Switch>
-          {/* <Route path="/about">
-          <About />
-        </Route> */}
+          <Route path="/about">
+            <About />
+          </Route>
           <Route path="/">
             <Home user={this.state.user} />
           </Route>
@@ -72,6 +73,10 @@ function Home(props) {
   );
 }
 
-// function About() {
-//   return <Page></Page>;
-// }
+function About() {
+  return (
+    <Page>
+      <AboutMe />
+    </Page>
+  );
+}
