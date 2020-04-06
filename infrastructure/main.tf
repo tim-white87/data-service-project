@@ -19,8 +19,8 @@ resource "aws_cognito_user_pool_client" "data-service-project-client" {
 
   user_pool_id = aws_cognito_user_pool.data-service-project-pool.id
   allowed_oauth_flows_user_pool_client = true
-  allowed_oauth_flows = ["code"]
-  callback_urls = ["https://localhost:5001/signin-oidc"]
+  allowed_oauth_flows = ["implicit"]
+  callback_urls = ["http://localhost:3000/"]
   allowed_oauth_scopes = ["email", "openid", "profile"]
   supported_identity_providers  = ["COGNITO"]
 }

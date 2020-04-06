@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -9,13 +7,14 @@ using Microsoft.Extensions.Logging;
 
 using Amazon.S3;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Messages.Controllers
 {
-    /// <summary>
-    /// ASP.NET Core controller to store message data in S3.
-    /// </summary>
-    [Route("messages/api/v1/[controller]")]
+  /// <summary>
+  /// ASP.NET Core controller to store message data in S3.
+  /// </summary>
+  [Route("messages/api/v1/[controller]")]
     public class MessagesController : ControllerBase
     {
         IAmazonS3 S3Client { get; set; }
@@ -39,6 +38,7 @@ namespace Messages.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<JsonResult> Get()
         {
             var listResponse = await this.S3Client.ListObjectsV2Async(new ListObjectsV2Request
