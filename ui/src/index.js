@@ -5,7 +5,7 @@ import App from './App';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
-axios.defaults.baseURL = 'http://localhost:5001/';
+axios.defaults.baseURL = 'https://localhost:5001/';
 export default axios;
 
 ReactDOM.render(

@@ -38,6 +38,11 @@ namespace Messages
             }
 
             app.UseHttpsRedirection();
+            app.UseCors(builder =>
+                builder.WithOrigins(Configuration["CORSOrigins"])
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
