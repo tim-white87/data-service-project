@@ -7,7 +7,7 @@ export default function Messages() {
   const [message, setMessage] = useState(newMessage);
 
   async function handleSave() {
-    const res = await axios.post('/messages/api/v1/messages/');
+    const res = await axios.post('/messages/api/v1/messages/', message);
     console.log(res);
     setMessage(newMessage);
   }

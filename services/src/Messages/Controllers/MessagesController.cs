@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Authorization;
+using Messages.Models;
 
 namespace Messages.Controllers
 {
@@ -81,9 +82,9 @@ namespace Messages.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task Post([FromForm]string value)
+        public async Task Post([FromBody]MessageModel model)
         {
-            Logger.LogInformation($"Post form body: {value}");
+            Logger.LogInformation($"Post form body: {model.Title}");
         }
 
         [HttpPut("{key}")]
