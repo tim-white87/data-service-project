@@ -79,6 +79,13 @@ namespace Messages.Controllers
             }
         }
 
+        [HttpPost]
+        [Authorize]
+        public async Task Post([FromForm]string value)
+        {
+            Logger.LogInformation($"Post form body: {value}");
+        }
+
         [HttpPut("{key}")]
         public async Task Put(string key)
         {
