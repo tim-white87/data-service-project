@@ -8,6 +8,10 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Authorization;
 using Messages.Models;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Collections.Generic;
 
 namespace Messages.Controllers
 {
@@ -84,7 +88,26 @@ namespace Messages.Controllers
         [Authorize]
         public async Task Post([FromBody]MessageModel model)
         {
-            Logger.LogInformation($"Post form body: {model.Title}");
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var stream = new MemoryStream(ASCIIEncoding.Default.GetBytes(JsonSerializer.Serialize(model)));
+            await this.Request.Body.CopyToAsync(stream);
+            stream.Position = 0;
+            try
+            {
+                var key = $"{userId}/{DateTime.Now.Ticks}.json";
+                await S3Client.UploadObjectFromStreamAsync(
+                    BucketName,
+                    key,
+                    stream,
+                    new Dictionary<string, object>{});
+                Logger.LogInformation($"Uploaded object {key} to bucket {BucketName}");
+            }
+            catch (AmazonS3Exception e)
+            {
+                this.Response.StatusCode = (int)e.StatusCode;
+                var writer = new StreamWriter(this.Response.Body);
+                writer.Write(e.Message);
+            }
         }
 
         [HttpPut("{key}")]
