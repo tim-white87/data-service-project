@@ -1,15 +1,28 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MessageEditor from './MessageEditor';
 
-export default function Messages() {
+export const MESSAGES_URI = '/messages/api/v1/messages/';
+
+export default function Messages(props) {
   const newMessage = { title: '', text: '' };
   const [message, setMessage] = useState(newMessage);
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    if (props.user && messages.length === 0) {
+      getMessages();
+    }
+  }, [props]);
 
   async function handleSave() {
-    const res = await axios.post('/messages/api/v1/messages/', message);
-    console.log(res);
+    await axios.post(MESSAGES_URI, message);
     setMessage(newMessage);
+  }
+
+  async function getMessages() {
+    const res = await axios.get(MESSAGES_URI);
+    setMessages(res.data);
   }
 
   return (

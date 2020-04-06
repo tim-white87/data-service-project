@@ -41,9 +41,9 @@ export default class App extends Component {
 
     Auth.currentAuthenticatedUser()
       .then(async (user) => {
-        this.setState({ user });
         const token = (await Auth.currentSession()).getIdToken().getJwtToken();
         axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
+        this.setState({ user });
       })
       .catch(() => console.log('Not signed in'));
   }
@@ -67,7 +67,7 @@ export default class App extends Component {
 function Home(props) {
   return (
     <Page {...props}>
-      <Messages></Messages>
+      <Messages {...props}></Messages>
     </Page>
   );
 }

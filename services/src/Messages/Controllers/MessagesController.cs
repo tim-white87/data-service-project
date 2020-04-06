@@ -45,9 +45,11 @@ namespace Messages.Controllers
         [Authorize]
         public async Task<JsonResult> Get()
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var listResponse = await this.S3Client.ListObjectsV2Async(new ListObjectsV2Request
             {
-                BucketName = this.BucketName
+                BucketName = BucketName,
+                Prefix = userId
             });
 
             try
@@ -63,14 +65,16 @@ namespace Messages.Controllers
         }
 
         [HttpGet("{key}")]
+        [Authorize]
         public async Task Get(string key)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             try
             {
                 var getResponse = await this.S3Client.GetObjectAsync(new GetObjectRequest
                 {
                     BucketName = this.BucketName,
-                    Key = key
+                    Key = $"{userId}/${key}"
                 });
 
                 this.Response.ContentType = getResponse.Headers.ContentType;
