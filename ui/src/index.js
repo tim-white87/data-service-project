@@ -1,8 +1,12 @@
+import axios from 'axios';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
+import './index.css';
 import * as serviceWorker from './serviceWorker';
+
+axios.defaults.baseURL = 'http://localhost:5001/';
+export default axios;
 
 ReactDOM.render(
   <React.StrictMode>

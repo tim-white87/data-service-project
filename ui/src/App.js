@@ -1,22 +1,17 @@
 import Amplify, { Auth, Hub } from 'aws-amplify';
+import axios from 'axios';
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 import Page from './common/Page';
 import Messages from './modules/messages/Messages';
 
+// TODO: set these to env vars
 Amplify.configure({
   Auth: {
-    // REQUIRED - Amazon Cognito Region
     region: 'us-east-1',
-
-    // OPTIONAL - Amazon Cognito User Pool ID
     userPoolId: 'us-east-1_stF9VppFd',
-
-    // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
     userPoolWebClientId: '2njonugrnaiuuqncsmodicfu0l',
-
-    // OPTIONAL - Hosted UI configuration
     oauth: {
       domain: 'data-service-project.auth.us-east-1.amazoncognito.com',
       scope: ['email', 'profile', 'openid'],
@@ -26,9 +21,6 @@ Amplify.configure({
     },
   },
 });
-
-// You can get the current config object
-// const currentConfig = Auth.configure();
 
 export default class App extends Component {
   state = { user: null, customState: null };
@@ -48,7 +40,11 @@ export default class App extends Component {
     });
 
     Auth.currentAuthenticatedUser()
-      .then((user) => this.setState({ user }))
+      .then(async (user) => {
+        this.setState({ user });
+        const token = (await Auth.currentSession()).getIdToken().getJwtToken();
+        axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
+      })
       .catch(() => console.log('Not signed in'));
   }
 
