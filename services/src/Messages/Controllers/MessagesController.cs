@@ -15,22 +15,23 @@ using System.Collections.Generic;
 
 namespace Messages.Controllers
 {
-  /// <summary>
-  /// ASP.NET Core controller to store message data in S3.
-  /// </summary>
-  [Route("messages/api/v1/[controller]")]
+    /// <summary>
+    /// ASP.NET Core controller to store message data in S3.
+    /// </summary>
+    [Route("messages/api/v1/[controller]")]
+    [Authorize]
     public class MessagesController : ControllerBase
     {
         IAmazonS3 S3Client { get; set; }
         ILogger Logger { get; set; }
 
         string BucketName { get; set; }
+        string UserId { get { return User.FindFirst(ClaimTypes.NameIdentifier)?.Value; } }
 
         public MessagesController(IConfiguration configuration, ILogger<MessagesController> logger, IAmazonS3 s3Client)
         {
             this.Logger = logger;
             this.S3Client = s3Client;
-
             this.BucketName = configuration[Startup.AppS3BucketKey];
             if(string.IsNullOrEmpty(this.BucketName))
             {
@@ -42,14 +43,12 @@ namespace Messages.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<JsonResult> Get()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var listResponse = await this.S3Client.ListObjectsV2Async(new ListObjectsV2Request
             {
                 BucketName = BucketName,
-                Prefix = userId
+                Prefix = UserId
             });
 
             try
@@ -65,16 +64,15 @@ namespace Messages.Controllers
         }
 
         [HttpGet("{key}")]
-        [Authorize]
         public async Task Get(string key)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            key = $"{UserId}/${key}";
             try
             {
                 var getResponse = await this.S3Client.GetObjectAsync(new GetObjectRequest
                 {
                     BucketName = this.BucketName,
-                    Key = $"{userId}/${key}"
+                    Key = key
                 });
 
                 this.Response.ContentType = getResponse.Headers.ContentType;
@@ -89,16 +87,14 @@ namespace Messages.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task Post([FromBody]MessageModel model)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var stream = new MemoryStream(ASCIIEncoding.Default.GetBytes(JsonSerializer.Serialize(model)));
             await this.Request.Body.CopyToAsync(stream);
             stream.Position = 0;
             try
             {
-                var key = $"{userId}/{DateTime.Now.Ticks}.json";
+                var key = $"{UserId}/{DateTime.Now.Ticks}.json";
                 await S3Client.UploadObjectFromStreamAsync(
                     BucketName,
                     key,
@@ -117,6 +113,7 @@ namespace Messages.Controllers
         [HttpPut("{key}")]
         public async Task Put(string key)
         {
+            key = $"{UserId}/${key}";
             // Copy the request body into a seekable stream required by the AWS SDK for .NET.
             var seekableStream = new MemoryStream();
             await this.Request.Body.CopyToAsync(seekableStream);
@@ -145,10 +142,11 @@ namespace Messages.Controllers
         [HttpDelete("{key}")]
         public async Task Delete(string key)
         {
+            key = $"{UserId}/${key}";
             var deleteRequest = new DeleteObjectRequest
             {
-                 BucketName = this.BucketName,
-                 Key = key
+                 BucketName = BucketName,
+                 Key = key,
             };
 
             try

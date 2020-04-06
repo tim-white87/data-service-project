@@ -25,6 +25,16 @@ export default function Messages(props) {
     setMessages(res.data);
   }
 
+  if (!props.user) {
+    return (
+      <section className="w-3/4 rounded bg-white shadow p-4">
+        <div className="text-center">
+          Please log in or sign up to start adding messages.
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="w-3/4 rounded bg-white shadow p-4">
       <h2 className="font-bold text-lg">Messages</h2>

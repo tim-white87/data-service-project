@@ -28,7 +28,7 @@ export default function PageHeader(props) {
                 onClick={() => Auth.federatedSignIn()}
                 className="text-blue-600"
               >
-                Login
+                Login / Sign Up
               </button>
             </li>
           ) : (
