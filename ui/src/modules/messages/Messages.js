@@ -8,11 +8,11 @@ export const MESSAGES_URI = '/messages/api/v1/messages/';
 export default function Messages(props) {
   const newMessage = { title: '', text: '' };
   const [message, setMessage] = useState(newMessage);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (props.user && messages.length === 0) {
+    if (props.user && !messages) {
       getMessages();
     }
     setIsLoading(false);
@@ -30,6 +30,8 @@ export default function Messages(props) {
     setMessages(res.data);
     setIsLoading(false);
   }
+
+  function handleChangeMessage() {}
 
   if (isLoading) {
     return (
@@ -60,13 +62,18 @@ export default function Messages(props) {
           onChangeMessage={setMessage}
         />
         <div className='flex mt-4'>
-          {messages.map((message, index) => {
-            return (
-              <div className='w-1/4 pr-2' key={`message-card-${index}`}>
-                <MessageCard message={message} />
-              </div>
-            );
-          })}
+          {messages &&
+            messages.map((message, index) => {
+              return (
+                <div className='w-1/4 pr-2' key={`message-card-${index}`}>
+                  <MessageCard
+                    message={message}
+                    getMessages={getMessages}
+                    onChangeMessage={handleChangeMessage}
+                  />
+                </div>
+              );
+            })}
         </div>
       </div>
     </section>

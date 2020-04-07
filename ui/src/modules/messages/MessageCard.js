@@ -11,21 +11,21 @@ export default function MessageCard(props) {
   }
 
   async function onClickDelete() {
-    const res = await axios.delete(`${MESSAGES_URI}${props.message.key}`);
+    await axios.delete(`${MESSAGES_URI}${props.message.key}`);
+    props.getMessages();
   }
 
-  function handleSave() {
+  async function handleSave() {
     setIsEditing(false);
+    await axios.put(`${MESSAGES_URI}${props.message.key}`);
   }
-
-  function handleChangeMessage() {}
 
   if (isEditing) {
     return (
       <MessageEditor
         onSave={handleSave}
         message={props.message}
-        onChangeMessage={handleChangeMessage}
+        onChangeMessage={props.onChangeMessage}
       />
     );
   }

@@ -37,6 +37,8 @@ export default class App extends Component {
           break;
         case 'customOAuthState':
           this.setState({ customState: data });
+          break;
+        default:
       }
     });
 

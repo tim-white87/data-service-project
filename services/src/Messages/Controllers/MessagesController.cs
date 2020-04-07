@@ -30,16 +30,16 @@ namespace Messages.Controllers
 
     public MessagesController(IConfiguration configuration, ILogger<MessagesController> logger, IAmazonS3 s3Client)
     {
-      this.Logger = logger;
-      this.S3Client = s3Client;
-      this.BucketName = configuration[Startup.AppS3BucketKey];
-      if (string.IsNullOrEmpty(this.BucketName))
+      Logger = logger;
+      S3Client = s3Client;
+      BucketName = configuration[Startup.AppS3BucketKey];
+      if (string.IsNullOrEmpty(BucketName))
       {
         logger.LogCritical("Missing configuration for S3 bucket. The AppS3Bucket configuration must be set to a S3 bucket.");
         throw new Exception("Missing configuration for S3 bucket. The AppS3Bucket configuration must be set to a S3 bucket.");
       }
 
-      logger.LogInformation($"Configured to use bucket {this.BucketName}");
+      logger.LogInformation($"Configured to use bucket {BucketName}");
     }
 
     [HttpGet]
@@ -87,17 +87,17 @@ namespace Messages.Controllers
       {
         var getResponse = await S3Client.GetObjectAsync(new GetObjectRequest
         {
-          BucketName = this.BucketName,
+          BucketName = BucketName,
           Key = key
         });
 
         Response.ContentType = getResponse.Headers.ContentType;
-        getResponse.ResponseStream.CopyTo(this.Response.Body);
+        getResponse.ResponseStream.CopyTo(Response.Body);
       }
       catch (AmazonS3Exception e)
       {
-        this.Response.StatusCode = (int)e.StatusCode;
-        var writer = new StreamWriter(this.Response.Body);
+        Response.StatusCode = (int)e.StatusCode;
+        var writer = new StreamWriter(Response.Body);
         writer.Write(e.Message);
       }
     }
@@ -106,7 +106,7 @@ namespace Messages.Controllers
     public async Task Post([FromBody]MessageModel model)
     {
       var stream = new MemoryStream(ASCIIEncoding.Default.GetBytes(JsonSerializer.Serialize(model)));
-      await this.Request.Body.CopyToAsync(stream);
+      await Request.Body.CopyToAsync(stream);
       stream.Position = 0;
       try
       {
@@ -120,8 +120,9 @@ namespace Messages.Controllers
       }
       catch (AmazonS3Exception e)
       {
-        this.Response.StatusCode = (int)e.StatusCode;
-        var writer = new StreamWriter(this.Response.Body);
+
+        Response.StatusCode = (int)e.StatusCode;
+        var writer = new StreamWriter(Response.Body);
         writer.Write(e.Message);
       }
     }
@@ -132,25 +133,25 @@ namespace Messages.Controllers
       key = $"{UserId}/{key}";
       // Copy the request body into a seekable stream required by the AWS SDK for .NET.
       var seekableStream = new MemoryStream();
-      await this.Request.Body.CopyToAsync(seekableStream);
+      await Request.Body.CopyToAsync(seekableStream);
       seekableStream.Position = 0;
 
       var putRequest = new PutObjectRequest
       {
-        BucketName = this.BucketName,
+        BucketName = BucketName,
         Key = key,
         InputStream = seekableStream
       };
 
       try
       {
-        var response = await this.S3Client.PutObjectAsync(putRequest);
-        Logger.LogInformation($"Uploaded object {key} to bucket {this.BucketName}. Request Id: {response.ResponseMetadata.RequestId}");
+        var response = await S3Client.PutObjectAsync(putRequest);
+        Logger.LogInformation($"Uploaded object {key} to bucket {BucketName}. Request Id: {response.ResponseMetadata.RequestId}");
       }
       catch (AmazonS3Exception e)
       {
-        this.Response.StatusCode = (int)e.StatusCode;
-        var writer = new StreamWriter(this.Response.Body);
+        Response.StatusCode = (int)e.StatusCode;
+        var writer = new StreamWriter(Response.Body);
         writer.Write(e.Message);
       }
     }
@@ -167,13 +168,13 @@ namespace Messages.Controllers
 
       try
       {
-        var response = await this.S3Client.DeleteObjectAsync(deleteRequest);
-        Logger.LogInformation($"Deleted object {key} from bucket {this.BucketName}. Request Id: {response.ResponseMetadata.RequestId}");
+        var response = await S3Client.DeleteObjectAsync(deleteRequest);
+        Logger.LogInformation($"Deleted object {key} from bucket {BucketName}. Request Id: {response.ResponseMetadata.RequestId}");
       }
       catch (AmazonS3Exception e)
       {
-        this.Response.StatusCode = (int)e.StatusCode;
-        var writer = new StreamWriter(this.Response.Body);
+        Response.StatusCode = (int)e.StatusCode;
+        var writer = new StreamWriter(Response.Body);
         writer.Write(e.Message);
       }
     }
