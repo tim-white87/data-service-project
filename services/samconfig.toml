@@ -1,0 +1,9 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "data-service-project"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-ub8w1hqhkmgi"
+s3_prefix = "data-service-project"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
