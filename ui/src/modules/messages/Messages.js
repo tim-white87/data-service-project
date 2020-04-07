@@ -8,12 +8,14 @@ export default function Messages(props) {
   const newMessage = { title: '', text: '' };
   const [message, setMessage] = useState(newMessage);
   const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (props.user && messages.length === 0) {
       getMessages();
     }
-  }, [props]);
+    setIsLoading(false);
+  }, [props, messages]);
 
   async function handleSave() {
     await axios.post(MESSAGES_URI, message);
@@ -22,8 +24,18 @@ export default function Messages(props) {
   }
 
   async function getMessages() {
+    setIsLoading(true);
     const res = await axios.get(MESSAGES_URI);
     setMessages(res.data);
+    setIsLoading(false);
+  }
+
+  if (isLoading) {
+    return (
+      <section className='w-3/4 rounded bg-white shadow p-4'>
+        <div className='text-center'>Loading...</div>
+      </section>
+    );
   }
 
   if (!props.user) {

@@ -27,10 +27,10 @@ export default class App extends Component {
   state = { user: null, customState: null };
 
   componentDidMount() {
-    Hub.listen('auth', ({ payload: { event, data } }) => {
+    Hub.listen('auth', async ({ payload: { event, data } }) => {
       switch (event) {
         case 'signIn':
-          this.setState({ user: data });
+          await this.setUser(data);
           break;
         case 'signOut':
           this.setState({ user: null });
@@ -42,21 +42,25 @@ export default class App extends Component {
 
     Auth.currentAuthenticatedUser()
       .then(async (user) => {
-        const token = (await Auth.currentSession()).getIdToken().getJwtToken();
-        axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
-        this.setState({ user });
+        await this.setUser(user);
       })
       .catch(() => console.log('Not signed in'));
+  }
+
+  async setUser(user) {
+    const token = (await Auth.currentSession()).getIdToken().getJwtToken();
+    axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
+    this.setState({ user });
   }
 
   render() {
     return (
       <Router>
         <Switch>
-          <Route path="/about">
+          <Route path='/about'>
             <About />
           </Route>
-          <Route path="/">
+          <Route path='/'>
             <Home user={this.state.user} />
           </Route>
         </Switch>
