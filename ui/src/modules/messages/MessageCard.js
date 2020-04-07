@@ -17,7 +17,7 @@ export default function MessageCard(props) {
 
   async function handleSave() {
     setIsEditing(false);
-    await axios.put(`${MESSAGES_URI}${props.message.key}`);
+    await axios.put(`${MESSAGES_URI}${props.message.key}`, props.message);
   }
 
   if (isEditing) {
@@ -25,7 +25,9 @@ export default function MessageCard(props) {
       <MessageEditor
         onSave={handleSave}
         message={props.message}
-        onChangeMessage={props.onChangeMessage}
+        onChangeMessage={(message) =>
+          props.onChangeMessage(message, props.index)
+        }
       />
     );
   }

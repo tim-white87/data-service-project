@@ -128,19 +128,18 @@ namespace Messages.Controllers
     }
 
     [HttpPut("{key}")]
-    public async Task Put(string key)
+    public async Task Put(string key, [FromBody]MessageModel model)
     {
-      key = $"{UserId}/{key}";
-      // Copy the request body into a seekable stream required by the AWS SDK for .NET.
-      var seekableStream = new MemoryStream();
-      await Request.Body.CopyToAsync(seekableStream);
-      seekableStream.Position = 0;
+      key = $"{UserId}/{model.Key}";
+      var stream = new MemoryStream(ASCIIEncoding.Default.GetBytes(JsonSerializer.Serialize(model)));
+      await Request.Body.CopyToAsync(stream);
+      stream.Position = 0;
 
       var putRequest = new PutObjectRequest
       {
         BucketName = BucketName,
         Key = key,
-        InputStream = seekableStream
+        InputStream = stream
       };
 
       try
