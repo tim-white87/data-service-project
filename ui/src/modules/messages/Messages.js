@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import MessageCard from './MessageCard';
 import MessageEditor from './MessageEditor';
 
 export const MESSAGES_URI = '/messages/api/v1/messages/';
@@ -51,13 +52,22 @@ export default function Messages(props) {
   return (
     <section className='w-3/4 rounded bg-white shadow p-4'>
       <h2 className='font-bold text-lg'>Messages</h2>
-      <div className='flex'>
+      <div className='flex flex-col'>
         <MessageEditor
           className='mt-4 w-1/4'
           onSave={handleSave}
           message={message}
           onChangeMessage={setMessage}
         />
+        <div className='flex mt-4'>
+          {messages.map((message, index) => {
+            return (
+              <div className='w-1/4 pr-2' key={`message-card-${index}`}>
+                <MessageCard message={message} />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
