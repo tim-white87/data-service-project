@@ -82,7 +82,7 @@ namespace Messages.Controllers
     [HttpGet("{key}")]
     public async Task Get(string key)
     {
-      key = $"{UserId}/${key}";
+      key = $"{UserId}/{key}";
       try
       {
         var getResponse = await S3Client.GetObjectAsync(new GetObjectRequest
@@ -129,7 +129,7 @@ namespace Messages.Controllers
     [HttpPut("{key}")]
     public async Task Put(string key)
     {
-      key = $"{UserId}/${key}";
+      key = $"{UserId}/{key}";
       // Copy the request body into a seekable stream required by the AWS SDK for .NET.
       var seekableStream = new MemoryStream();
       await this.Request.Body.CopyToAsync(seekableStream);
@@ -158,7 +158,7 @@ namespace Messages.Controllers
     [HttpDelete("{key}")]
     public async Task Delete(string key)
     {
-      key = $"{UserId}/${key}";
+      key = $"{UserId}/{key}";
       var deleteRequest = new DeleteObjectRequest
       {
         BucketName = BucketName,

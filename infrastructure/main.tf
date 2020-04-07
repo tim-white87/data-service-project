@@ -17,12 +17,12 @@ resource "aws_cognito_user_pool" "data-service-project-pool" {
 resource "aws_cognito_user_pool_client" "data-service-project-client" {
   name = "data-service-project-client"
 
-  user_pool_id = aws_cognito_user_pool.data-service-project-pool.id
+  user_pool_id                         = aws_cognito_user_pool.data-service-project-pool.id
   allowed_oauth_flows_user_pool_client = true
-  allowed_oauth_flows = ["code", "implicit"]
-  callback_urls = ["http://localhost:3000/"]
-  allowed_oauth_scopes = ["email", "openid", "profile"]
-  supported_identity_providers  = ["COGNITO"]
+  allowed_oauth_flows                  = ["code", "implicit"]
+  callback_urls                        = ["http://localhost:3000/"]
+  allowed_oauth_scopes                 = ["email", "openid", "profile"]
+  supported_identity_providers         = ["COGNITO"]
 }
 
 resource "aws_cognito_user_pool_domain" "main" {
