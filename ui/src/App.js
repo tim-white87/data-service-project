@@ -10,14 +10,14 @@ import Messages from './modules/messages/Messages';
 // TODO: set these to env vars
 Amplify.configure({
   Auth: {
-    region: 'us-east-1',
-    userPoolId: 'us-east-1_stF9VppFd',
-    userPoolWebClientId: '2njonugrnaiuuqncsmodicfu0l',
+    region: process.env.REACT_APP_REGION,
+    userPoolId: process.env.REACT_APP_USER_POOL_ID,
+    userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID,
     oauth: {
-      domain: 'data-service-project.auth.us-east-1.amazoncognito.com',
+      domain: process.env.REACT_APP_COGNITO_DOMAIN,
       scope: ['email', 'profile', 'openid'],
-      redirectSignIn: 'http://localhost:3000/',
-      redirectSignOut: 'http://localhost:3000/',
+      redirectSignIn: process.env.REACT_APP_REDIRECT_SIGN_IN,
+      redirectSignOut: process.env.REACT_APP_REDIRECT_SIGN_OUT,
       responseType: 'code', // or 'token', note that REFRESH token will only be generated when the responseType is code
     },
   },

@@ -24,8 +24,11 @@ build-ui:
 
 build: build-ui
 
+deploy-services:
+	cd ./services && sam deploy
+
 deploy-ui: build-ui
-	cd ./ui && aws s3 sync ./build/ s3://react-pokedex-challenge-tw --delete --acl public-read
+	cd ./ui && aws s3 sync ./build/ s3://data-service-project-ui-bucket-tw --delete --acl public-read
 	cd ./infrastructure && terraform output
 	# TODO setup s3 bucket as env var derived from terraform outputs
 
