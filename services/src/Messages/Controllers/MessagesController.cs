@@ -45,20 +45,36 @@ namespace Messages.Controllers
     [HttpGet]
     public async Task<JsonResult> Get()
     {
-      var listResponse = await this.S3Client.ListObjectsV2Async(new ListObjectsV2Request
-      {
-        BucketName = BucketName,
-        Prefix = UserId
-      });
+      var keys = await S3Client.GetAllObjectKeysAsync(BucketName, UserId, new Dictionary<string, object> { });
 
       try
       {
-        this.Response.ContentType = "text/json";
-        return new JsonResult(listResponse.S3Objects);
+        var tasks = new List<Task<GetObjectResponse>>();
+        foreach (var key in keys)
+        {
+          tasks.Add(S3Client.GetObjectAsync(new GetObjectRequest
+          {
+            BucketName = BucketName,
+            Key = key
+          }));
+        }
+        Task.WaitAll(tasks.ToArray());
+        var models = new List<MessageModel> { };
+        foreach (var task in tasks)
+        {
+          StreamReader reader = new StreamReader(task.Result.ResponseStream);
+          string rawJson = reader.ReadToEnd();
+          var model = JsonSerializer.Deserialize<MessageModel>(rawJson);
+          var k = task.Result.Key.Split('/');
+          model.Key = k[k.Length - 1];
+          models.Add(model);
+        }
+        Response.ContentType = "text/json";
+        return new JsonResult(models);
       }
       catch (AmazonS3Exception e)
       {
-        this.Response.StatusCode = (int)e.StatusCode;
+        Response.StatusCode = (int)e.StatusCode;
         return new JsonResult(e.Message);
       }
     }
@@ -69,13 +85,13 @@ namespace Messages.Controllers
       key = $"{UserId}/${key}";
       try
       {
-        var getResponse = await this.S3Client.GetObjectAsync(new GetObjectRequest
+        var getResponse = await S3Client.GetObjectAsync(new GetObjectRequest
         {
           BucketName = this.BucketName,
           Key = key
         });
 
-        this.Response.ContentType = getResponse.Headers.ContentType;
+        Response.ContentType = getResponse.Headers.ContentType;
         getResponse.ResponseStream.CopyTo(this.Response.Body);
       }
       catch (AmazonS3Exception e)

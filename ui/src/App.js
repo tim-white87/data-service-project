@@ -58,7 +58,7 @@ export default class App extends Component {
       <Router>
         <Switch>
           <Route path='/about'>
-            <About />
+            <About user={this.state.user} />
           </Route>
           <Route path='/'>
             <Home user={this.state.user} />
@@ -77,9 +77,9 @@ function Home(props) {
   );
 }
 
-function About() {
+function About(props) {
   return (
-    <Page>
+    <Page {...props}>
       <AboutMe />
     </Page>
   );
