@@ -10,7 +10,7 @@ start-ui:
 	cd ./ui && npm run start
 
 build-services:
-	echo $(PWD) && cd ./services && sam build
+	cd ./services && sam build
 
 start-services: build-services
 	@cd ./services && sam local start-api -p $(SERVICES_PORT)
@@ -24,7 +24,7 @@ build-ui:
 
 build: build-ui
 
-deploy-services:
+deploy-services: build-services
 	cd ./services && sam deploy
 
 deploy-ui: build-ui
