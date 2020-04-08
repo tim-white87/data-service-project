@@ -5,10 +5,21 @@ Description: >
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
+  Api:
+    OpenApiVersion: 3.0.1
   Function:
     Timeout: 10
 
 Resources:
+  DataServicesApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      Cors:
+        AllowHeaders: "'Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization'"
+        AllowOrigin: "'*'"
+        AllowMethods: "'POST, GET, OPTIONS'"
+
   MessagesFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -21,3 +32,4 @@ Resources:
           Properties:
             Path: /messages/{proxy+}
             Method: any
+            RestApiId: !Ref DataServicesApi
