@@ -27,6 +27,7 @@ build: build-ui
 deploy-services: build-services
 	cd ./services && sam deploy
 
+deploy-ui: export NODE_ENV=production
 deploy-ui: build-ui
 	cd ./ui && aws s3 sync ./build/ s3://data-service-project-ui-bucket-tw --delete --acl public-read
 	cd ./infrastructure && terraform output
